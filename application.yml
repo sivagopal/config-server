@@ -1,0 +1,139 @@
+db:
+  callbacks:
+    populate-test-users: true
+email:
+  service:
+    url: http://127.0.0.1:8082/email
+  ui:
+    url: http://127.0.0.1:8081/cas-ui
+external:
+  email:
+    sender: enquiries@onlinedebtsolutions.org.uk
+internal:
+  email:
+    only: true
+    box:
+      sift:
+        in: DCASrulesengine-siftin@insolvency.gsi.gov.uk
+        in.test: CAS.UAT1@insolvency.gsi.gov.uk
+        out: DCASrulesengine-siftout@insolvency.gsi.gov.uk
+        out.test: CAS.UAT2@insolvency.gsi.gov.uk
+    receiver: CAS.UAT1@insolvency.gsi.gov.uk
+    sender: DCAS@insolvency.gsi.gov.uk
+  lqd:
+    cases:
+      email:
+        box: OR.Conduct.Reporting@insolvency@gsi.gov.uk
+  official:
+    receiver:
+      email: OR.Conduct.Reporting@insolvency.gsi.gov.uk
+ipuser:
+  max:
+    login:
+      attempts: 3
+  salt:
+    iterations: 2000
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+password:
+  maxlength: 20
+  minlength: 8
+rest:
+  security:
+    role:
+      admin:
+        internal:
+          password: qJLM87$z
+        name: cas_admin
+        password: pIkL76$y
+      internal:
+        admin:
+          name: cas_internal_admin
+      rulesengine:
+        name: rules_engine_admin
+        password: sKLM98$a
+      user:
+        name: cas_user
+        password: cDVH$fK6
+rules:
+  engine:
+    single:
+      url: http://127.0.0.1:9000/invoke-rules-engine/v2/single/{caseReference}
+server:
+  port: 8082
+spring:
+  mail:
+    host: smtp.mailtrap.io
+    domain: smtp.mailtrap.io
+    port: 2525
+    username: 6d8d6e5fa6e514
+    password: 49a99cdd907268
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  boot:
+    admin:
+      client:
+        enabled: false
+        url: http://localhost:8700
+        instance:
+          metadata:
+            user.name: cas_admin
+            user.password: pIkL76$y
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    password: manager
+    url: jdbc:postgresql://localhost:5432/postgres?currentSchema=cas
+    username: postgres
+  flyway:
+    baseline-on-migrate: false
+    password: manager
+    schemas: cas
+    url: jdbc:postgresql://localhost:5432/postgres
+    user: postgres
+  jpa:
+    # do not hold an EntityManager open for the entire duration of View processing
+    open-in-view: false
+    properties:
+      hibernate:
+        # when fetching elements of one collection for just one entity, fetch all elements of that one collection for up to 20 (already materialised) entities as a single SQL statement using IN clause for the Entity Ids
+        default_batch_fetch_size: 20
+        show_sql: true
+        jdbc:
+          # batch insert and update statements (separately) up to 50 statements per batch
+          batch_size: 50
+          # switch on batching of updates
+          batch_versioned_data: true
+          lob:
+            # Prevent warnings of unimplemented postgres driver method
+            non_contextual_creation: true
+        cache:
+          # cache persistent entities across transactions (technically across EntityManager instances)
+          use_second_level_cache: true
+          # cache results (Entity Ids) of queries, which return Entity or collection<Entity> results, invalidated by mutation of any instance of any Entity type upon which that query depends
+          use_query_cache: true
+          hazelcast:
+            # do not use default name hazelcast.xml or SpringBoot will auto-detect and create a second (unwanted) cache node in same JVM
+            configuration_file_path: hazelcast-for-hibernate.xml
+          region:
+            # use hazelcast as L2 and Query Result cache to avail of data sharding across cache nodes
+            factory_class: com.hazelcast.hibernate.HazelcastCacheRegionFactory
+        # group inserts together to facilitate statement batching
+        order_inserts: true
+        # group updates together to facilitate statement batching
+        order_updates: true
+    hibernate:
+      naming:
+        # cause hibernate 5 to recognize metadata annotations such as @Column
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
+        # cause hibernate 5 to recognize metadata annotations such as @Column
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+
+
