@@ -81,7 +81,7 @@ spring:
   boot:
     admin:
       client:
-        enabled: false
+        enabled: true 
         url: http://localhost:8700
         instance:
           metadata:
